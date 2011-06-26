@@ -17,6 +17,12 @@ register_activation_hook(__FILE__,'jakoblist_install_data');
 
 
 
+function search_url() {
+
+	echo 'meep';
+
+}
+
 
 function buecherliste($atts, $content = null) {	
 global $wpdb;
@@ -180,41 +186,52 @@ function jakoblist_remove() {
 }
 
 function jakoblist_manage() {
-/*	
-if ($_GET["func"] == "jakoblist_remove") jakoblist_remove();
-if ($_GET["func"] == "jakoblist_edit") jakoblist_edit();
-if ($_GET["func"] == "jakoblist_add") jakoblist_add();
-if ($_GET["func"] == 'search') jakoblist_search();	
-*/
-	print('
-	
-	<script type="text/javascript" src="http://www.ainotenshi.org/wp-content/plugins/jakoblist/jquery.tablesorter.min.js"></script>
-			<script type="text/javascript">$(document).ready(function() 
-    { 
-        $("#myTable").tablesorter(); 
-    } 
-); 
-   </script>');
 
-	switch ($_POST['jakoborder'])
+
+/*
+Scan the URL for sort/order parameters and keep them.
+*/
+
+$searchterm = $_GET['search'];
+
+if(isset($_GET['search']))
+	{
+		echo $_GET['search'];
+	}
+
+
+		switch ($_GET['sortby'])
 		{
-			case 'titleasc':
+			case 'title':
 				$order = "title";
 				break;
-			case 'titledesc':
-				$order = "title";
-				$direction = "DESC";
-				break;
-			case 'authorasc':
+			case 'author':
 				$order = "author";
+				echo 'meep';
 				break;
-			case 'authordesc':
-				$order = "author";
-				$direction = "DESC";
+			case 'publisher':
+				$order = "publisher";
+				break;
+			case 'info':
+				$order = "info";
+				break;
+			case 'price':
+				$order = "price";
 				break;
 			default:
 				$order = "title";
 		}
+
+		if(isset($GET_['desc']))
+			{ 
+				$direction = 'DESC';
+			}
+		else
+			{
+				$direction = '';
+			}
+
+
 		
 	
 	/*
@@ -249,7 +266,7 @@ if ($_GET["func"] == 'search') jakoblist_search();
 ?>
 <div class="wrap">
 <h2>Bücherliste verwalten</h2>
-<form action="admin.php?page=jakoblist" method="post">
+<form action="admin.php?page=jakoblist&sortby=<?php echo $order; ?>" method="post">
 	<table style="margin-bottom:0.2em;">
 	<tr>
 	<td>
@@ -268,15 +285,15 @@ if ($_GET["func"] == 'search') jakoblist_search();
 	<td>
 	<input type="submit" value=" <?php echo __("sortieren") ?> " class="button-secondary"/>
 	</form>
-	<form action="admin.php?page=jakoblist&func=search" method="post">
+	<form action="admin.php?page=jakoblist&search=<?php echo $searchterm; ?>&sortby=<?php echo $order; ?>" method="post">
 	</td>
 	<td width="100%">
 	</td>
 	<td>
-		<input type="text" name="search" />
+		<input type="text" value="" name="search" />
 	</td>
 	<td>
-		<input type="submit" value=" <?php __("suchen") ?> " class="button-secondary" />
+		<input type="submit" value=" <?php echo _("suchen") ?> " class="button-secondary" />
 	</td>
 	</form>
 	</tr>
@@ -296,7 +313,7 @@ if ($_GET["func"] == 'search') jakoblist_search();
 <tbody>
 	<tr>
 		<form action="admin.php?page=jakoblist&func=jakoblist_add" method="post">
-			<td><input name="title" type="text" size="30%" maxlength="200"><br /><em>Max. 200 Zeichen</em></td>
+			<td><input name="title" type="text" size="30%" maxlength="200"><br /><em><?php var_dump($search); ?>Max. 200 Zeichen</em></td>
 			<td><input name="author" type="text" size="30%" maxlength="200"><br /><em>Max. 200 Zeichen</em></td>
 			<td><input name="publisher" type="text" size="30%" maxlength="200"><br /><em>Max. 200 Zeichen</em></td>
 			<td><input name="info" type="text" size="50%" maxlength="200"><br /><em>Max. 200 Zeichen</em></td>
@@ -308,12 +325,17 @@ if ($_GET["func"] == 'search') jakoblist_search();
 
 	global $wpdb;
 	
-	if($_GET["func"] != 'search') { /* Alles außer Suche */ 
+	
+	if($_GET['search'] == '' ) { /* Alles außer Suche */ 
 		$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` order by `".$order."`".$direction."" );
+		echo 'no search';
 	}
 	else 
 	{ /* Suche */	
-		$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` WHERE `title` LIKE '%".$_POST["search"]."%' OR `author` LIKE '%".$_POST["search"]."%' OR `publisher` LIKE '%".$_POST["search"]."%' OR `info` LIKE '%".$_POST["search"]."%' order by `".$order."`".$direction."" );		
+		//$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` WHERE `title` LIKE '%".$searchterm."%' OR `author` LIKE '%".$searchterm."%' OR `publisher` LIKE '%".$_POST['search']."%' OR `info` LIKE '%".$searchterm."%' order by `".$order."`".$direction."" );
+		$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` WHERE `title` LIKE '%".$searchterm."%' OR `author` LIKE '%".$searchterm."%' OR `publisher` LIKE '%".$searchterm."%' OR `info` LIKE '%".$searchterm."%' order by `".$order."` ".$direction."" );
+		echo $searchterm.' = ';
+		echo $_GET['search'];		
 	}
 	
 	if(count($books) > 0) { /* keine Suchergebnisse */			
@@ -342,6 +364,9 @@ if ($_GET["func"] == 'search') jakoblist_search();
 </table>
 </div>
 <?php
+
+
+$searchterm = $_POST['search'];
 }
 
 function jakoblist_dashboard() {
@@ -361,7 +386,8 @@ add_action('admin_menu', 'jakoblist_dashboard');
 if ($_GET["func"] == "jakoblist_remove") jakoblist_remove();
 if ($_GET["func"] == "jakoblist_edit") jakoblist_edit();
 if ($_GET["func"] == "jakoblist_add") jakoblist_add();
-if ($_GET["func"] == 'search') jakoblist_search();
+/*if ($_GET["func"] == 'search') jakoblist_search();*/
+if (isset($_POST["search"])) search_url(); 
 
 /*if ($_GET["page"] == "jakoblist_edit") jakoblist_editt();*/
 ?>
