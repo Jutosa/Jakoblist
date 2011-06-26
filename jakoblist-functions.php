@@ -5,9 +5,11 @@
 #	Cleans a string from "'" and escapes HTML	#
 #################################################*/
 function strclean($input) {
-	$input = str_replace('\\\'', '\'', $input);
-	$input = htmlspecialchars($input);
+	
+	$input 	= 	str_replace('\\\'', '\'', $input);
+	$input 	= 	htmlspecialchars($input);
 	return $input;
+
 }
 
 function sort_class($atts, $orderby, $order)
@@ -55,7 +57,7 @@ function sort_link($atts, $orderby, $order, $searchterm)
 			
 		}
 
-	$link = bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&search='.$searchterm.'&orderby='.$atts.'&order='.$theorder;
+	$link 	= 	bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&search='.$searchterm.'&orderby='.$atts.'&order='.$theorder;
 
 	return $link; 
 }
@@ -63,8 +65,9 @@ function sort_link($atts, $orderby, $order, $searchterm)
 function jakoblist_search() {
 	global $wpdb;
 	
-	$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` order by `".$order."`".$direction."" );
-	$result ='';
+	$books 	= 	$wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` order by `".$order."`".$direction."" );
+	$result = 	'';
+
 	if(count($books) == 0) {
 		/* wenn nix da is */
 	} else {

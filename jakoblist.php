@@ -51,11 +51,11 @@ function buecherliste($atts, $content = null)
 					
 					if($book->price !== '0.00')
 						{
-							$theprice		=	'; '.$thecurrency.strclean(str_replace('.', ',', $book->price));
+							$theprice 	=	'; '.$thecurrency.strclean(str_replace('.', ',', $book->price));
 						}
 					else
 						{
-							$theprice		=	'';
+							$theprice	=	'';
 						}
 					
 					$result =  $result.'<p><span style="color: #D9A404;"><em><strong>'.$thetitle.'</strong></em></span><br /><strong>'.$theauthor.'</strong><br />'.$thepublisher.'<br />'.$theinfo.$theprice.'</p>';
@@ -88,11 +88,36 @@ function jakoblist_add()
 
 	if(!$id == '1')
 		{
-			$wpdb->insert($table_name, array( 'created' => $thecreation, 'createdby' => $thecreator, 'title' => $thetitle, 'author' => $theauthor, 'publisher' => $thepublisher, 'info' => $jakoblist_info, 'price' => $theprice ) );
+			$wpdb->insert(
+				$table_name,
+				array(
+					'created' 	=> 	$thecreation,
+					'createdby' 	=> 	$thecreator,
+					'title' 	=> 	$thetitle,
+					'author' 	=> 	$theauthor,
+					'publisher' 	=> 	$thepublisher,
+					'info' 		=> 	$jakoblist_info,
+					'price' 	=> 	$theprice 
+				     ) 
+				     );
 		}
 	else
 		{
-			$wpdb->update($wpdb->prefix.'jakoblist', array('title' => $thetitle,'modifiedby' => $themodificator, 'modified' => $themodification, 'author' => $theauthor, 'publisher' => $thepublisher, 'info' => $theinfo, 'price' => $theprice), array('id' => $id));	
+			$wpdb->update(
+				$wpdb->prefix.'jakoblist',
+				array(
+					'title' 	=> 	$thetitle,
+					'modifiedby' 	=> 	$themodificator,
+					'modified' 	=> 	$themodification,
+					'author' 	=> 	$theauthor,
+					'publisher' 	=> 	$thepublisher,
+					'info' 		=> 	$theinfo,
+					'price' 	=> 	$theprice
+				     ),
+				array(
+					'id' 	=> 	$id
+				     )
+				     );	
 		}
 
 }
@@ -187,8 +212,8 @@ function jakoblist_remove()
 {
 	global $wpdb;
 	
-	$id=$_GET['id'];
-	$SQL = "DELETE FROM `".$wpdb->prefix."jakoblist` WHERE `id` = $id";
+	$id 	= 	$_GET['id'];
+	$SQL 	= 	"DELETE FROM `".$wpdb->prefix."jakoblist` WHERE `id` = $id";
 	$wpdb->query($wpdb->prepare($SQL));
 }
 
@@ -201,37 +226,37 @@ function jakoblist_manage()
 	Scan the URL for sort/order parameters and keep them.
 	*/
 
-		$searchterm = $_GET['search'];
+		$searchterm 	= 	$_GET['search'];
 
 		switch ($_GET['orderby'])
 			{
 				case 'title':
-					$orderby = "title";
+					$orderby 	= 	"title";
 					break;
 				case 'author':
-					$orderby = "author";
+					$orderby 	= 	"author";
 					break;
 				case 'publisher':
-					$orderby = "publisher";
+					$orderby 	= 	"publisher";
 					break;
 				case 'info':
-					$orderby = "info";
+					$orderby 	= 	"info";
 					break;
 				case 'price':
-					$orderby = "price";
+					$orderby 	= 	"price";
 					break;
 				default:
-					$orderby = "title";
+					$orderby 	= 	"title";
 			}
 
 
 		switch ($_GET['order'])
 			{
 				case 'desc':
-					$order = "DESC";
+					$order 	= 	"DESC";
 					break;
 				default:
-					$order = "";
+					$order 	= 	"";
 			}
 
 
@@ -292,18 +317,18 @@ function jakoblist_manage()
 		
 		if($_GET['search'] == '' ) 
 			{ /* Alles außer Suche */ 
-				$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` order by `".$orderby."`".$order."" );
+				$books 	= 	$wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` order by `".$orderby."`".$order."" );
 			}
 		else 
 			{ /* Suche */	
-				$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` WHERE `title` LIKE '%".$searchterm."%' OR `author` LIKE '%".$searchterm."%' OR `publisher` LIKE '%".$searchterm."%' OR `info` LIKE '%".$searchterm."%' order by `".$orderby."` ".$order."" );	
+				$books 	= 	$wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` WHERE `title` LIKE '%".$searchterm."%' OR `author` LIKE '%".$searchterm."%' OR `publisher` LIKE '%".$searchterm."%' OR `info` LIKE '%".$searchterm."%' order by `".$orderby."` ".$order."" );	
 			}
 		
 		if(count($books) > 0)
 			{ /* keine Suchergebnisse */			
 				foreach($books as $book)
 					{
-						$class = ('alternate' != $class) ? 'alternate' : '';
+						$class 	= 	('alternate' != $class) ? 'alternate' : '';
 						echo '<form action="" method="post"><tr class="'.$class.'">';
 						echo '<td>'.strclean($book->title).'</td>';
 						echo '<td>'.strclean($book->author).'</td>';
