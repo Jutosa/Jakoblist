@@ -24,6 +24,40 @@ function search_url()
 
 }
 
+function sort_class($atts, $sort, $order)
+{
+	/*<?php if($sort == 'title') {echo 'sorted';} else { echo 'sortable';} ?> <?php if($sort == 'title' and $order == 'DESC') { echo 'desc';} else { echo 'asc';} ?>*/	
+	echo $sort;
+	if($sort == $atts)
+		{
+			echo ' sorted';
+			if($order == 'DESC')
+				{
+					echo ' desc';
+				}
+			else
+				{
+					echo ' asc';
+				}
+		}
+	else
+		{
+			if($order == 'desc')
+				{
+					echo ' desc';
+				}
+			else
+				{
+					echo ' asc';
+				}
+			
+			echo ' sortable';
+		}
+
+	
+
+}
+
 
 function buecherliste($atts, $content = null)
 {	
@@ -207,7 +241,6 @@ function jakoblist_manage()
 					break;
 				case 'author':
 					$sort = "author";
-					echo 'meep';
 					break;
 				case 'publisher':
 					$sort = "publisher";
@@ -232,6 +265,8 @@ function jakoblist_manage()
 				default:
 					$order = "";
 			}
+
+
 		
 
 	?>
@@ -266,7 +301,7 @@ function jakoblist_manage()
 		<td>
 			<input type="hidden" name="page" value="jakoblist">
 			<input type="hidden" name="sortby" value="<?php echo $sort; ?>">
-			<input type="hidden" name="orderby" value="<?php echo $order; ?>">
+			<input type="hidden" name="order" value="<?php echo $order; ?>">
 			<input type="submit" value=" <?php echo _("suchen") ?> " class="button-secondary" />
 		</td>
 		</form>
@@ -277,10 +312,10 @@ function jakoblist_manage()
 	<table id="mytable" class="widefat" width="50%">
 	<thead>
 		<tr>
-			<th width="20%" class="manage-column column-date sortable <?php echo $thsort; ?>"><a href="<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=title'.$thsortlink; ?>">Titel<?php if ($order == 'title') echo '<span class="sorting-indicator"></span>'; ?></a></th>
-			<th width="20%" class="manage-column column-date sortable <?php echo $thsort; ?>"><a href="<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=author'.$thsortlink; ?>">Autor<?php if ($order == 'author') echo '<span class="sorting-indicator"></span>'; ?></a></th>
-			<th width="20%" class="manage-column column-date sortable <?php echo $thsort; ?>"><a href="<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=publisher'.$thsortlink; ?>">Verlag<?php if ($order == 'publisher') echo '<span class="sorting-indicator"></span>'; ?></a></th>
-			<th class="manage-column column-date sortable <?php echo $thsort; ?>"><a href="<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=info'.$thsortlink; ?>">Information<?php if ($order == 'info') echo '<span class="sorting-indicator"></span>'; ?></th>
+			<th width="20%" class="manage-column column-date <?php sort_class('title', $sort, $order) ?>"><a href="<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=title'.$thsortlink; ?>">Titel<?php if($sort == 'title') echo '<span class=sorting-indicator>&nbsp;</span>'; ?></a></th>
+			<th width="20%" class="manage-column column-date <?php sort_class('author', $sort, $order) ?>"><a href="<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=author'.$thsortlink; ?>">Autor<?php if($sort == 'author') echo '<span class="sorting-indicator"></span>'; ?></a></th>
+			<th width="20%" class="manage-column column-date <?php sort_class('publisher', $sort, $order) ?>"><a href="<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=publisher'.$thsortlink; ?>">Verlag<?php if($sort == 'publisher') echo '<span class="sorting-indicator"></span>'; ?></a></th>
+			<th class="manage-column column-date <?php sort_class('info', $sort, $order) ?>"><a href="<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=info'.$thsortlink; ?>">Information<?php if($sort == 'info') echo '<span class="sorting-indicator"></span>'; ?></th>
 			<th colspan="3" width="10"></th>
 		</tr>
 	</thead>
@@ -300,34 +335,35 @@ function jakoblist_manage()
 		global $wpdb;
 		
 		
-		if($_GET['search'] == '' ) { /* Alles außer Suche */ 
-			$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` order by `".$sort."`".$order."" );
-			echo 'no search';
-		}
-		else 
-		{ /* Suche */	
-			//$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` WHERE `title` LIKE '%".$searchterm."%' OR `author` LIKE '%".$searchterm."%' OR `publisher` LIKE '%".$_POST['search']."%' OR `info` LIKE '%".$searchterm."%' order by `".$order."`".$direction."" );
-			$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` WHERE `title` LIKE '%".$searchterm."%' OR `author` LIKE '%".$searchterm."%' OR `publisher` LIKE '%".$searchterm."%' OR `info` LIKE '%".$searchterm."%' order by `".$sort."` ".$order."" );	
-		}
-		
-		if(count($books) > 0) { /* keine Suchergebnisse */			
-			foreach($books as $book) {
-				$class = ('alternate' != $class) ? 'alternate' : '';
-				echo '<form action="" method="post"><tr class="'.$class.'">';
-				echo '<td>'.strclean($book->title).'</td>';
-				echo '<td>'.strclean($book->author).'</td>';
-				echo '<td>'.strclean($book->publisher).'</td>';
-				echo '<td>'.strclean($book->info).'</td>';
-				echo '<td>'.strclean($book->price).'</td>';
-				echo '<td align="left"><input type="button" name="edit" value=" ✎ " class="button-secondary" onclick=location.href="';
-				echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist_edit&id='.$book->id.'"';
-				echo '></td>';
-				echo '<td align="center"><input type="button" name="-" value=" - " class="button-secondary" onclick="if(confirm(\'Sind Sie sicher?\')) {location.href=\'';
-				echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&func=jakoblist_remove&id='.$book->id.'\'} else {return false;}"';
-				echo '></td>';
-				echo '</tr></form>';
+		if($_GET['search'] == '' ) 
+			{ /* Alles außer Suche */ 
+				$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` order by `".$sort."`".$order."" );
 			}
-		}	
+		else 
+			{ /* Suche */	
+				$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` WHERE `title` LIKE '%".$searchterm."%' OR `author` LIKE '%".$searchterm."%' OR `publisher` LIKE '%".$searchterm."%' OR `info` LIKE '%".$searchterm."%' order by `".$sort."` ".$order."" );	
+			}
+		
+		if(count($books) > 0)
+			{ /* keine Suchergebnisse */			
+				foreach($books as $book)
+					{
+						$class = ('alternate' != $class) ? 'alternate' : '';
+						echo '<form action="" method="post"><tr class="'.$class.'">';
+						echo '<td>'.strclean($book->title).'</td>';
+						echo '<td>'.strclean($book->author).'</td>';
+						echo '<td>'.strclean($book->publisher).'</td>';
+						echo '<td>'.strclean($book->info).'</td>';
+						echo '<td>'.strclean($book->price).'</td>';
+						echo '<td align="left"><input type="button" name="edit" value=" ✎ " class="button-secondary" onclick=location.href="';
+						echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist_edit&id='.$book->id.'"';
+						echo '></td>';
+						echo '<td align="center"><input type="button" name="-" value=" - " class="button-secondary" onclick="if(confirm(\'Sind Sie sicher?\')) {location.href=\'';
+						echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&func=jakoblist_remove&id='.$book->id.'\'} else {return false;}"';
+						echo '></td>';
+						echo '</tr></form>';
+					}
+			}	
 
 	?>
 
