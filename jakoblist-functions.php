@@ -10,6 +10,55 @@ function strclean($input) {
 	return $input;
 }
 
+function sort_class($atts, $orderby, $order)
+{
+	/*<?php if($orderby == 'title') {echo 'sorted';} else { echo 'sortable';} ?> <?php if($orderby == 'title' and $order == 'DESC') { echo 'desc';} else { echo 'asc';} ?>*/	
+	if($orderby == $atts)
+		{
+			echo ' sorted';
+			if($order == 'DESC')
+				{
+					echo ' desc';
+				}
+			else
+				{
+					echo ' asc';
+				}
+		}
+	else
+		{
+			echo ' desc';			
+			echo ' sortable';
+		}
+
+	
+
+}
+
+function sort_link($atts, $orderby, $order, $searchterm)
+{
+	/*<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=info'.$thsortlink; ?>*/
+	
+	if($atts == $orderby)
+		{
+			if($order == 'DESC')
+				{
+					$theorder = 'asc';
+				}
+			else
+				{
+					$theorder = 'desc';
+				}
+		}
+	else
+		{
+			
+		}
+
+	$link = bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&search='.$searchterm.'&orderby='.$atts.'&order='.$theorder;
+
+	return $link; 
+}
 
 function jakoblist_search() {
 	global $wpdb;

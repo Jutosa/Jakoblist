@@ -24,39 +24,7 @@ function search_url()
 
 }
 
-function sort_class($atts, $sort, $order)
-{
-	/*<?php if($sort == 'title') {echo 'sorted';} else { echo 'sortable';} ?> <?php if($sort == 'title' and $order == 'DESC') { echo 'desc';} else { echo 'asc';} ?>*/	
-	echo $sort;
-	if($sort == $atts)
-		{
-			echo ' sorted';
-			if($order == 'DESC')
-				{
-					echo ' desc';
-				}
-			else
-				{
-					echo ' asc';
-				}
-		}
-	else
-		{
-			if($order == 'desc')
-				{
-					echo ' desc';
-				}
-			else
-				{
-					echo ' asc';
-				}
-			
-			echo ' sortable';
-		}
 
-	
-
-}
 
 
 function buecherliste($atts, $content = null)
@@ -227,6 +195,7 @@ function jakoblist_remove()
 function jakoblist_manage()
 {
 
+	global $wpdb;
 
 	/*
 	Scan the URL for sort/order parameters and keep them.
@@ -234,25 +203,25 @@ function jakoblist_manage()
 
 		$searchterm = $_GET['search'];
 
-		switch ($_GET['sortby'])
+		switch ($_GET['orderby'])
 			{
 				case 'title':
-					$sort = "title";
+					$orderby = "title";
 					break;
 				case 'author':
-					$sort = "author";
+					$orderby = "author";
 					break;
 				case 'publisher':
-					$sort = "publisher";
+					$orderby = "publisher";
 					break;
 				case 'info':
-					$sort = "info";
+					$orderby = "info";
 					break;
 				case 'price':
-					$sort = "price";
+					$orderby = "price";
 					break;
 				default:
-					$sort = "title";
+					$orderby = "title";
 			}
 
 
@@ -260,7 +229,6 @@ function jakoblist_manage()
 			{
 				case 'desc':
 					$order = "DESC";
-					echo 'desc';
 					break;
 				default:
 					$order = "";
@@ -272,25 +240,12 @@ function jakoblist_manage()
 	?>
 	<div class="wrap">
 	<h2>Bücherliste verwalten</h2>
-	<form action="admin.php?page=jakoblist&sortby=<?php echo $sort; ?>" method="post">
 		<table style="margin-bottom:0.2em;">
 		<tr>
-		<td>
-		<select name="jakoborder" size="1">
-			<option><?php echo __("Sortieren nach...") ?></option>
-			<option value="titleasc"><?php echo __("Titel (auftsteigend)") ?></option>
-			<option value="titledesc"><?php echo __("Titel (absteigend)") ?></option>
-			<option value="authorasc"><?php echo __("Autor (aufsteigend)") ?></option>
-			<option value="authordesc"><?php echo __("Autor (absteigend)") ?></option>
-			<option value="publisherasc"><?php echo __("Verlag (aufsteigend)") ?></option>
-			<option value="publisherdesc"><?php echo __("Verlag (absteigend)") ?></option>
-			<option value="infoasc"><?php echo __("Information (aufsteigend)") ?></option>
-			<option value="infoesc"><?php echo __("Information (absteigend)") ?></option>
-		</select>
+		<td class="tablenav">
+			<span class="displaying-num"><?php echo $wpdb->get_var( "SELECT COUNT(*) FROM `wp_ainotenshijakoblist`" ); ?>&nbsp;<?php echo 'Bücher'; ?></span>
 		</td>
 		<td>
-		<input type="submit" value=" <?php echo __("sortieren") ?> " class="button-secondary"/>
-		</form>
 		<form action="admin.php?" method="get">
 		</td>
 		<td width="100%">
@@ -300,9 +255,9 @@ function jakoblist_manage()
 		</td>
 		<td>
 			<input type="hidden" name="page" value="jakoblist">
-			<input type="hidden" name="sortby" value="<?php echo $sort; ?>">
+			<input type="hidden" name="orderby" value="<?php echo $orderby; ?>">
 			<input type="hidden" name="order" value="<?php echo $order; ?>">
-			<input type="submit" value=" <?php echo _("suchen") ?> " class="button-secondary" />
+			<input type="submit" value=" <?php echo _("suchen") ?> " class="button-secondary" />			
 		</td>
 		</form>
 		</tr>
@@ -312,17 +267,17 @@ function jakoblist_manage()
 	<table id="mytable" class="widefat" width="50%">
 	<thead>
 		<tr>
-			<th width="20%" class="manage-column column-date <?php sort_class('title', $sort, $order) ?>"><a href="<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=title'.$thsortlink; ?>">Titel<?php if($sort == 'title') echo '<span class=sorting-indicator>&nbsp;</span>'; ?></a></th>
-			<th width="20%" class="manage-column column-date <?php sort_class('author', $sort, $order) ?>"><a href="<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=author'.$thsortlink; ?>">Autor<?php if($sort == 'author') echo '<span class="sorting-indicator"></span>'; ?></a></th>
-			<th width="20%" class="manage-column column-date <?php sort_class('publisher', $sort, $order) ?>"><a href="<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=publisher'.$thsortlink; ?>">Verlag<?php if($sort == 'publisher') echo '<span class="sorting-indicator"></span>'; ?></a></th>
-			<th class="manage-column column-date <?php sort_class('info', $sort, $order) ?>"><a href="<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=info'.$thsortlink; ?>">Information<?php if($sort == 'info') echo '<span class="sorting-indicator"></span>'; ?></th>
+			<th width="20%" class="manage-column column-date <?php sort_class('title', $orderby, $order) ?>"><a href="<?php echo sort_link('title', $orderby, $order, $searchterm); ?>">Titel<?php if($orderby == 'title') echo '<span class=sorting-indicator>&nbsp;</span>'; ?></a></th>
+			<th width="20%" class="manage-column column-date <?php sort_class('author', $orderby, $order) ?>"><a href="<?php echo sort_link('author', $orderby, $order, $searchterm); ?>">Autor<?php if($orderby == 'author') echo '<span class="sorting-indicator"></span>'; ?></a></th>
+			<th width="20%" class="manage-column column-date <?php sort_class('publisher', $orderby, $order) ?>"><a href="<?php echo sort_link('publisher', $orderby, $order, $searchterm); ?>">Verlag<?php if($orderby == 'publisher') echo '<span class="sorting-indicator"></span>'; ?></a></th>
+			<th class="manage-column column-date <?php sort_class('info', $orderby, $order) ?>"><a href="<?php echo sort_link('info', $orderby, $order, $searchterm); ?>">Information<?php if($orderby == 'info') echo '<span class="sorting-indicator"></span>'; ?></th>
 			<th colspan="3" width="10"></th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
 			<form action="admin.php?page=jakoblist&func=jakoblist_add" method="post">
-				<td><input name="title" type="text" size="30%" maxlength="200"><br /><em><?php var_dump($search); ?>Max. 200 Zeichen</em></td>
+				<td><input name="title" type="text" size="30%" maxlength="200"><br /><em>Max. 200 Zeichen</em></td>
 				<td><input name="author" type="text" size="30%" maxlength="200"><br /><em>Max. 200 Zeichen</em></td>
 				<td><input name="publisher" type="text" size="30%" maxlength="200"><br /><em>Max. 200 Zeichen</em></td>
 				<td><input name="info" type="text" size="50%" maxlength="200"><br /><em>Max. 200 Zeichen</em></td>
@@ -337,11 +292,11 @@ function jakoblist_manage()
 		
 		if($_GET['search'] == '' ) 
 			{ /* Alles außer Suche */ 
-				$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` order by `".$sort."`".$order."" );
+				$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` order by `".$orderby."`".$order."" );
 			}
 		else 
 			{ /* Suche */	
-				$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` WHERE `title` LIKE '%".$searchterm."%' OR `author` LIKE '%".$searchterm."%' OR `publisher` LIKE '%".$searchterm."%' OR `info` LIKE '%".$searchterm."%' order by `".$sort."` ".$order."" );	
+				$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` WHERE `title` LIKE '%".$searchterm."%' OR `author` LIKE '%".$searchterm."%' OR `publisher` LIKE '%".$searchterm."%' OR `info` LIKE '%".$searchterm."%' order by `".$orderby."` ".$order."" );	
 			}
 		
 		if(count($books) > 0)
