@@ -17,15 +17,17 @@ register_activation_hook(__FILE__,'jakoblist_install_data');
 
 
 
-function search_url() {
+function search_url()
+{
 
 	echo 'meep';
 
 }
 
 
-function buecherliste($atts, $content = null) {	
-global $wpdb;
+function buecherliste($atts, $content = null)
+{	
+	global $wpdb;
 	
 
 	$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` order by `title`" );
@@ -62,7 +64,8 @@ global $wpdb;
 
 }
 
-function jakoblist_add() {
+function jakoblist_add()
+{
 	global $wpdb;
 	global $current_user;
 	get_currentuserinfo();
@@ -92,13 +95,14 @@ function jakoblist_add() {
 
 }
 
-function jakoblist_edit() {
-/*
-This functions serves as both the way to add new books and the way to edit exisiting books.
+function jakoblist_edit()
+{
+	/*
+	This functions serves as both the way to add new books and the way to edit exisiting books.
 
-	*	the 'add' functionality is accessible through the dashboard sidebar menu
-	* 	the 'edit' functionality is accessible by clicking the edit-button in the jakoblist management view
-*/
+		*	the 'add' functionality is accessible through the dashboard sidebar menu
+		* 	the 'edit' functionality is accessible by clicking the edit-button in the jakoblist management view
+	*/
 
 	global $wpdb;
 	$id = $_GET["id"]; /*	Extracts the id from the URL	*/
@@ -177,7 +181,8 @@ This functions serves as both the way to add new books and the way to edit exisi
 }
 
 
-function jakoblist_remove() {
+function jakoblist_remove()
+{
 	global $wpdb;
 	
 	$id=$_GET['id'];
@@ -185,191 +190,157 @@ function jakoblist_remove() {
 	$wpdb->query($wpdb->prepare($SQL));
 }
 
-function jakoblist_manage() {
+function jakoblist_manage()
+{
 
 
-/*
-Scan the URL for sort/order parameters and keep them.
-*/
+	/*
+	Scan the URL for sort/order parameters and keep them.
+	*/
 
-$searchterm = $_GET['search'];
-
-if(isset($_GET['search']))
-	{
-		echo $_GET['search'];
-	}
-
+		$searchterm = $_GET['search'];
 
 		switch ($_GET['sortby'])
-		{
-			case 'title':
-				$order = "title";
-				break;
-			case 'author':
-				$order = "author";
-				echo 'meep';
-				break;
-			case 'publisher':
-				$order = "publisher";
-				break;
-			case 'info':
-				$order = "info";
-				break;
-			case 'price':
-				$order = "price";
-				break;
-			default:
-				$order = "title";
-		}
-
-		if(isset($GET_['desc']))
-			{ 
-				$direction = 'DESC';
-			}
-		else
 			{
-				$direction = '';
+				case 'title':
+					$sort = "title";
+					break;
+				case 'author':
+					$sort = "author";
+					echo 'meep';
+					break;
+				case 'publisher':
+					$sort = "publisher";
+					break;
+				case 'info':
+					$sort = "info";
+					break;
+				case 'price':
+					$sort = "price";
+					break;
+				default:
+					$sort = "title";
 			}
 
 
+		switch ($_GET['order'])
+			{
+				case 'desc':
+					$order = "DESC";
+					echo 'desc';
+					break;
+				default:
+					$order = "";
+			}
 		
-	
-	/*
-	if ($_GET['desc'] == '1'){
-		$direction = 'DESC';
-		$thsort = 'desc';
-		$thsortlink = '&desc=0';
-		}
-	else {
-		$direction = '';
-		$thsort = 'asc';
-		$thsortlink = '&desc=1';
-		}
-		
-	$getorder = $_GET["order"];
 
-	switch ($getorder) {
-		case 'author':
-			$order = 'author';
-			break;
-		case 'publisher':
-			$order = 'publisher';
-			break;
-		case 'info':
-			$order = 'info';
-			break;
-		default:
-			$order = 'title';
-	}*/
-
-
-?>
-<div class="wrap">
-<h2>Bücherliste verwalten</h2>
-<form action="admin.php?page=jakoblist&sortby=<?php echo $order; ?>" method="post">
-	<table style="margin-bottom:0.2em;">
-	<tr>
-	<td>
-	<select name="jakoborder" size="1">
-		<option><?php echo __("Sortieren nach...") ?></option>
-		<option value="titleasc"><?php echo __("Titel (auftsteigend)") ?></option>
-		<option value="titledesc"><?php echo __("Titel (absteigend)") ?></option>
-		<option value="authorasc"><?php echo __("Autor (aufsteigend)") ?></option>
-		<option value="authordesc"><?php echo __("Autor (absteigend)") ?></option>
-		<option value="publisherasc"><?php echo __("Verlag (aufsteigend)") ?></option>
-		<option value="publisherdesc"><?php echo __("Verlag (absteigend)") ?></option>
-		<option value="infoasc"><?php echo __("Information (aufsteigend)") ?></option>
-		<option value="infoesc"><?php echo __("Information (absteigend)") ?></option>
-	</select>
-	</td>
-	<td>
-	<input type="submit" value=" <?php echo __("sortieren") ?> " class="button-secondary"/>
-	</form>
-	<form action="admin.php?page=jakoblist&search=<?php echo $searchterm; ?>&sortby=<?php echo $order; ?>" method="post">
-	</td>
-	<td width="100%">
-	</td>
-	<td>
-		<input type="text" value="" name="search" />
-	</td>
-	<td>
-		<input type="submit" value=" <?php echo _("suchen") ?> " class="button-secondary" />
-	</td>
-	</form>
-	</tr>
-	</table>
-	
-
-<table id="mytable" class="widefat" width="50%">
-<thead>
-	<tr>
-		<th width="20%" class="manage-column column-date sortable <?php echo $thsort; ?>"><a href="<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=title'.$thsortlink; ?>">Titel<?php if ($order == 'title') echo '<span class="sorting-indicator"></span>'; ?></a></th>
-		<th width="20%" class="manage-column column-date sortable <?php echo $thsort; ?>"><a href="<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=author'.$thsortlink; ?>">Autor<?php if ($order == 'author') echo '<span class="sorting-indicator"></span>'; ?></a></th>
-		<th width="20%" class="manage-column column-date sortable <?php echo $thsort; ?>"><a href="<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=publisher'.$thsortlink; ?>">Verlag<?php if ($order == 'publisher') echo '<span class="sorting-indicator"></span>'; ?></a></th>
-		<th class="manage-column column-date sortable <?php echo $thsort; ?>"><a href="<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=info'.$thsortlink; ?>">Information<?php if ($order == 'info') echo '<span class="sorting-indicator"></span>'; ?></th>
-		<th colspan="3" width="10"></th>
-	</tr>
-</thead>
-<tbody>
-	<tr>
-		<form action="admin.php?page=jakoblist&func=jakoblist_add" method="post">
-			<td><input name="title" type="text" size="30%" maxlength="200"><br /><em><?php var_dump($search); ?>Max. 200 Zeichen</em></td>
-			<td><input name="author" type="text" size="30%" maxlength="200"><br /><em>Max. 200 Zeichen</em></td>
-			<td><input name="publisher" type="text" size="30%" maxlength="200"><br /><em>Max. 200 Zeichen</em></td>
-			<td><input name="info" type="text" size="50%" maxlength="200"><br /><em>Max. 200 Zeichen</em></td>
-			<td><input name="price" type="text" size="10" maxlength="10"><br /><em>Max. 200 Zeichen</em></td>
-			<td align="left" colspan="2"><input type="submit" name="add" value=" ✚ " class="button-primary" onclick=''></td>
+	?>
+	<div class="wrap">
+	<h2>Bücherliste verwalten</h2>
+	<form action="admin.php?page=jakoblist&sortby=<?php echo $sort; ?>" method="post">
+		<table style="margin-bottom:0.2em;">
+		<tr>
+		<td>
+		<select name="jakoborder" size="1">
+			<option><?php echo __("Sortieren nach...") ?></option>
+			<option value="titleasc"><?php echo __("Titel (auftsteigend)") ?></option>
+			<option value="titledesc"><?php echo __("Titel (absteigend)") ?></option>
+			<option value="authorasc"><?php echo __("Autor (aufsteigend)") ?></option>
+			<option value="authordesc"><?php echo __("Autor (absteigend)") ?></option>
+			<option value="publisherasc"><?php echo __("Verlag (aufsteigend)") ?></option>
+			<option value="publisherdesc"><?php echo __("Verlag (absteigend)") ?></option>
+			<option value="infoasc"><?php echo __("Information (aufsteigend)") ?></option>
+			<option value="infoesc"><?php echo __("Information (absteigend)") ?></option>
+		</select>
+		</td>
+		<td>
+		<input type="submit" value=" <?php echo __("sortieren") ?> " class="button-secondary"/>
 		</form>
-	</tr>
-<?php
+		<form action="admin.php?" method="get">
+		</td>
+		<td width="100%">
+		</td>
+		<td>
+			<input type="text" value="" name="search" />
+		</td>
+		<td>
+			<input type="hidden" name="page" value="jakoblist">
+			<input type="hidden" name="sortby" value="<?php echo $sort; ?>">
+			<input type="hidden" name="orderby" value="<?php echo $order; ?>">
+			<input type="submit" value=" <?php echo _("suchen") ?> " class="button-secondary" />
+		</td>
+		</form>
+		</tr>
+		</table>
+		
 
-	global $wpdb;
-	
-	
-	if($_GET['search'] == '' ) { /* Alles außer Suche */ 
-		$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` order by `".$order."`".$direction."" );
-		echo 'no search';
-	}
-	else 
-	{ /* Suche */	
-		//$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` WHERE `title` LIKE '%".$searchterm."%' OR `author` LIKE '%".$searchterm."%' OR `publisher` LIKE '%".$_POST['search']."%' OR `info` LIKE '%".$searchterm."%' order by `".$order."`".$direction."" );
-		$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` WHERE `title` LIKE '%".$searchterm."%' OR `author` LIKE '%".$searchterm."%' OR `publisher` LIKE '%".$searchterm."%' OR `info` LIKE '%".$searchterm."%' order by `".$order."` ".$direction."" );
-		echo $searchterm.' = ';
-		echo $_GET['search'];		
-	}
-	
-	if(count($books) > 0) { /* keine Suchergebnisse */			
-		foreach($books as $book) {
-			$class = ('alternate' != $class) ? 'alternate' : '';
-			echo '<form action="" method="post"><tr class="'.$class.'">';
-			echo '<td>'.strclean($book->title).'</td>';
-			echo '<td>'.strclean($book->author).'</td>';
-			echo '<td>'.strclean($book->publisher).'</td>';
-			echo '<td>'.strclean($book->info).'</td>';
-			echo '<td>'.strclean($book->price).'</td>';
-			echo '<td align="left"><input type="button" name="edit" value=" ✎ " class="button-secondary" onclick=location.href="';
-			echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist_edit&id='.$book->id.'"';
-			echo '></td>';
-			echo '<td align="center"><input type="button" name="-" value=" - " class="button-secondary" onclick="if(confirm(\'Sind Sie sicher?\')) {location.href=\'';
-			echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&func=jakoblist_remove&id='.$book->id.'\'} else {return false;}"';
-			echo '></td>';
-			echo '</tr></form>';
+	<table id="mytable" class="widefat" width="50%">
+	<thead>
+		<tr>
+			<th width="20%" class="manage-column column-date sortable <?php echo $thsort; ?>"><a href="<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=title'.$thsortlink; ?>">Titel<?php if ($order == 'title') echo '<span class="sorting-indicator"></span>'; ?></a></th>
+			<th width="20%" class="manage-column column-date sortable <?php echo $thsort; ?>"><a href="<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=author'.$thsortlink; ?>">Autor<?php if ($order == 'author') echo '<span class="sorting-indicator"></span>'; ?></a></th>
+			<th width="20%" class="manage-column column-date sortable <?php echo $thsort; ?>"><a href="<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=publisher'.$thsortlink; ?>">Verlag<?php if ($order == 'publisher') echo '<span class="sorting-indicator"></span>'; ?></a></th>
+			<th class="manage-column column-date sortable <?php echo $thsort; ?>"><a href="<?php echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&order=info'.$thsortlink; ?>">Information<?php if ($order == 'info') echo '<span class="sorting-indicator"></span>'; ?></th>
+			<th colspan="3" width="10"></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<form action="admin.php?page=jakoblist&func=jakoblist_add" method="post">
+				<td><input name="title" type="text" size="30%" maxlength="200"><br /><em><?php var_dump($search); ?>Max. 200 Zeichen</em></td>
+				<td><input name="author" type="text" size="30%" maxlength="200"><br /><em>Max. 200 Zeichen</em></td>
+				<td><input name="publisher" type="text" size="30%" maxlength="200"><br /><em>Max. 200 Zeichen</em></td>
+				<td><input name="info" type="text" size="50%" maxlength="200"><br /><em>Max. 200 Zeichen</em></td>
+				<td><input name="price" type="text" size="10" maxlength="10"><br /><em>Max. 200 Zeichen</em></td>
+				<td align="left" colspan="2"><input type="submit" name="add" value=" ✚ " class="button-primary" onclick=''></td>
+			</form>
+		</tr>
+	<?php
+
+		global $wpdb;
+		
+		
+		if($_GET['search'] == '' ) { /* Alles außer Suche */ 
+			$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` order by `".$sort."`".$order."" );
+			echo 'no search';
 		}
-	}	
+		else 
+		{ /* Suche */	
+			//$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` WHERE `title` LIKE '%".$searchterm."%' OR `author` LIKE '%".$searchterm."%' OR `publisher` LIKE '%".$_POST['search']."%' OR `info` LIKE '%".$searchterm."%' order by `".$order."`".$direction."" );
+			$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` WHERE `title` LIKE '%".$searchterm."%' OR `author` LIKE '%".$searchterm."%' OR `publisher` LIKE '%".$searchterm."%' OR `info` LIKE '%".$searchterm."%' order by `".$sort."` ".$order."" );	
+		}
+		
+		if(count($books) > 0) { /* keine Suchergebnisse */			
+			foreach($books as $book) {
+				$class = ('alternate' != $class) ? 'alternate' : '';
+				echo '<form action="" method="post"><tr class="'.$class.'">';
+				echo '<td>'.strclean($book->title).'</td>';
+				echo '<td>'.strclean($book->author).'</td>';
+				echo '<td>'.strclean($book->publisher).'</td>';
+				echo '<td>'.strclean($book->info).'</td>';
+				echo '<td>'.strclean($book->price).'</td>';
+				echo '<td align="left"><input type="button" name="edit" value=" ✎ " class="button-secondary" onclick=location.href="';
+				echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist_edit&id='.$book->id.'"';
+				echo '></td>';
+				echo '<td align="center"><input type="button" name="-" value=" - " class="button-secondary" onclick="if(confirm(\'Sind Sie sicher?\')) {location.href=\'';
+				echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&func=jakoblist_remove&id='.$book->id.'\'} else {return false;}"';
+				echo '></td>';
+				echo '</tr></form>';
+			}
+		}	
 
-?>
+	?>
 
 
-</tbody>
-</table>
-</div>
-<?php
+	</tbody>
+	</table>
+	</div>
+	<?php
 
-
-$searchterm = $_POST['search'];
 }
 
-function jakoblist_dashboard() {
+function jakoblist_dashboard()
+{
 
 	add_object_page('Bücherliste', 'Bücherliste', 10, 'jakoblist', 'jakoblist_manage');
 		add_submenu_page('jakoblist', 'Verwalten', 'Bücherliste verwalten', 10, 'jakoblist', 'jakoblist_manage');
