@@ -35,9 +35,9 @@ global $wpdb;
 				{	
 					$thetitle		=	strclean($book->title);
 					$theauthor		=	strclean($book->author);
-					$thepublisher	=	strclean($book->publisher);
+					$thepublisher		=	strclean($book->publisher);
 					$theinfo		=	strclean($book->info);
-					$thecurrency	= 	'€';
+					$thecurrency		= 	'€';
 					
 					if($book->price !== '0.00')
 						{
@@ -65,14 +65,14 @@ function jakoblist_add() {
 	
 	$thetitle 			= 	$_POST["title"];
 	$theauthor 			= 	$_POST["author"];
-	$thepublisher 		= 	$_POST["publisher"];
+	$thepublisher 			= 	$_POST["publisher"];
 	$theinfo 			= 	$_POST["info"];
 	$theprice			=	str_replace(',', '.', $_POST["price"]);
-	$thecreation		= 	current_time('mysql');
+	$thecreation			= 	current_time('mysql');
 	$thecreator			=	$current_user->user_login;
-	$themodification	= 	current_time('mysql');
-	$themodificator		=	$current_user->user_login;
-	$table_name 		= 	$wpdb->prefix . "jakoblist";
+	$themodification		= 	current_time('mysql');
+	$themodificator			=	$current_user->user_login;
+	$table_name 			= 	$wpdb->prefix . "jakoblist";
 
 
 	if(!$id == '1')
@@ -104,9 +104,9 @@ This functions serves as both the way to add new books and the way to edit exisi
 		<?php
 			if(isset($id)) /*	If an id is provided in the URL the 'edit' functionality is loaded	*/
 				{
-					$pagetitle   	= 	__("Bearbeiten eines Buches");
+					$pagetitle   		= 	__("Bearbeiten eines Buches");
 					$edit 			= 	'&edit=1';
-					$formaction 	= 	'admin.php?page=jakoblist&func=jakoblist_add'.$edit.'&id='.$id;
+					$formaction 		= 	'admin.php?page=jakoblist&func=jakoblist_add'.$edit.'&id='.$id;
 					$savebtn  		=	__("Änderung übernehmen");
 					
 					foreach($books as $book)
@@ -114,7 +114,7 @@ This functions serves as both the way to add new books and the way to edit exisi
 							/*	Gets the values of the book matching the earlier select query	*/
 							$thetitle		=	strclean($book->title);
 							$theauthor		=	strclean($book->author);
-							$thepublisher	=	strclean($book->publisher);
+							$thepublisher		=	strclean($book->publisher);
 							$theinfo		=	strclean($book->info);
 							$theprice		=	strclean($book->price);
 						}
@@ -122,7 +122,7 @@ This functions serves as both the way to add new books and the way to edit exisi
 			else	/*	If no id is provided in the URL the 'add' functionality is loaded */
 				{
 					$pagetitle		= 	__("Hinzufügen eines Buches");
-					$formaction 	= 	'admin.php?page=jakoblist&func=jakoblist_add'.$edit;
+					$formaction 		= 	'admin.php?page=jakoblist&func=jakoblist_add'.$edit;
 					$savebtn  		=	__("Hinzufügen");
 				}
 				
