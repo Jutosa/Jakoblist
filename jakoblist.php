@@ -8,7 +8,7 @@ Author: Julian Saraceni
 Author URI: http://www.ainotenshi.org
 License: GPL2
 */
-global $wpdb;
+global $wpdb; //Important! DBQueries don't work without this!
 include_once(ABSPATH.'wp-content/plugins/jakoblist/jakoblist-setup.php');
 include_once(ABSPATH.'wp-content/plugins/jakoblist/jakoblist-functions.php');
 require(ABSPATH . WPINC . '/pluggable.php');
@@ -27,9 +27,15 @@ function search_url()
 
 
 
-function buecherliste($atts, $content = null)
-{	
-	global $wpdb;
+function jakoblist_output($atts, $content = null)
+{
+	
+	/*####################################################################################
+	# This function generates the output for the front-end.                              #
+	# The shortcode [jakoblist_output] is used to place the list within pages or posts.  #
+	#####################################################################################*/
+	
+	global $wpdb; //Important! DBQueries don't work without this!
 	
 
 	$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` order by `title`" );
@@ -68,7 +74,13 @@ function buecherliste($atts, $content = null)
 
 function jakoblist_add()
 {
-	global $wpdb;
+	/*####################################################################################
+	# This function provides add end edit functionality. If there's an ID in the URL the #
+	# corrensponding database entry will be edited; if there's no ID a new entry is      #
+	# created.                                                                           #
+	#####################################################################################*/
+
+	global $wpdb; //Important! DBQueries don't work without this!
 	global $current_user;
 	get_currentuserinfo();
 	
@@ -124,14 +136,16 @@ function jakoblist_add()
 
 function jakoblist_edit()
 {
-	/*
-	This functions serves as both the way to add new books and the way to edit exisiting books.
+	/*####################################################################################
+	# This functions serves as both the way to add new books and the way to edit         #
+	# exisiting books.                                                                   #
+	#	*	the 'add' functionality is accessible through the dashboard sidebar  # 
+	#       	menu.                                                                #
+	#	* 	the 'edit' functionality is accessible by clicking the edit-button   #
+	#               in the jakoblist management view                                     #
+	#####################################################################################*/
 
-		*	the 'add' functionality is accessible through the dashboard sidebar menu
-		* 	the 'edit' functionality is accessible by clicking the edit-button in the jakoblist management view
-	*/
-
-	global $wpdb;
+	global $wpdb; //Important! DBQueries don't work without this!
 	$id = $_GET["id"]; /*	Extracts the id from the URL	*/
 	$books = $wpdb->get_results("SELECT * FROM `".$wpdb->prefix."jakoblist` WHERE `id` = ".$id); /*	Selects the Database entry matching the id	*/
 	
@@ -210,17 +224,21 @@ function jakoblist_edit()
 
 function jakoblist_remove()
 {
-	global $wpdb;
+	/*####################################################################################
+	# This function deletes the entry that matches the ID.                               #
+	#####################################################################################*/
+
+	global $wpdb; //Important! DBQueries don't work without this!
 	
-	$id 	= 	$_GET['id'];
-	$SQL 	= 	"DELETE FROM `".$wpdb->prefix."jakoblist` WHERE `id` = $id";
-	$wpdb->query($wpdb->prepare($SQL));
+	$id 	= 	$_GET['id'];  //Extracts the ID from the URL.
+	$SQL 	= 	"DELETE FROM `".$wpdb->prefix."jakoblist` WHERE `id` = $id"; //The SQL query needed to delete the entry matching the ID.
+	$wpdb->query($wpdb->prepare($SQL)); //Execution of the SQL query
 }
 
 function jakoblist_manage()
 {
 
-	global $wpdb;
+	global $wpdb; //Important! DBQueries don't work without this!
 
 	/*
 	Scan the URL for sort/order parameters and keep them.
@@ -264,28 +282,28 @@ function jakoblist_manage()
 
 	?>
 	<div class="wrap">
-	<h2>Bücherliste verwalten</h2>
+		<h2>Bücherliste verwalten</h2>
 		<table style="margin-bottom:0.2em;">
-		<tr>
-		<td class="tablenav">
-			<span class="displaying-num"><?php echo $wpdb->get_var( "SELECT COUNT(*) FROM `wp_ainotenshijakoblist`" ); ?>&nbsp;<?php echo 'Bücher'; ?></span>
-		</td>
-		<td>
-		<form action="admin.php?" method="get">
-		</td>
-		<td width="100%">
-		</td>
-		<td>
-			<input type="text" value="" name="search" />
-		</td>
-		<td>
-			<input type="hidden" name="page" value="jakoblist">
-			<input type="hidden" name="orderby" value="<?php echo $orderby; ?>">
-			<input type="hidden" name="order" value="<?php echo $order; ?>">
-			<input type="submit" value=" <?php echo _("suchen") ?> " class="button-secondary" />			
-		</td>
-		</form>
-		</tr>
+			<tr>
+				<td class="tablenav">
+					<span class="displaying-num"><?php echo $wpdb->get_var( "SELECT COUNT(*) FROM `wp_ainotenshijakoblist`" ); ?>&nbsp;<?php echo 'Bücher'; ?></span>
+				</td>
+				<td>
+					<form action="admin.php?" method="get">
+				</td>
+				<td width="100%">
+				</td>
+				<td>
+					<input type="text" value="" name="search" />
+				</td>
+				<td>
+					<input type="hidden" name="page" value="jakoblist">
+					<input type="hidden" name="orderby" value="<?php echo $orderby; ?>">
+					<input type="hidden" name="order" value="<?php echo $order; ?>">
+					<input type="submit" value=" <?php echo _("suchen") ?> " class="button-secondary" />			
+				</td>
+					</form>
+			</tr>
 		</table>
 		
 
@@ -312,7 +330,7 @@ function jakoblist_manage()
 		</tr>
 	<?php
 
-		global $wpdb;
+		global $wpdb; //Important! DBQueries don't work without this!
 		
 		
 		if($_GET['search'] == '' ) 
@@ -367,7 +385,7 @@ function jakoblist_dashboard()
 
 
 
-add_shortcode('buecherliste', 'buecherliste');
+add_shortcode('jakoblist_output', 'jakoblist_output');
 add_action('admin_menu', 'jakoblist_dashboard');
 
 if ($_GET["func"] == "jakoblist_remove") jakoblist_remove();
