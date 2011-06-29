@@ -276,17 +276,25 @@ function jakoblist_manage()
 				default:
 					$order 	= 	"";
 			}
-
+		
+		if($_GET['search'] == '' ) 
+			{ /* Alles außer Suche */ 
+				$books 	= 	$wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` order by `".$orderby."`".$order."" );
+			}
+		else 
+			{ /* Suche */	
+				$books 	= 	$wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` WHERE `title` LIKE '%".$searchterm."%' OR `author` LIKE '%".$searchterm."%' OR `publisher` LIKE '%".$searchterm."%' OR `info` LIKE '%".$searchterm."%' order by `".$orderby."` ".$order."" );	
+			}
 
 		
 
 	?>
 	<div class="wrap">
-		<h2>Bücherliste verwalten<?php if($_GET['search']) echo '<span class=\'subtitle\'> 		Suchergebnisse für "'.$_GET['search'].'"</span>'; ?></h2>
+		<h2>Bücherliste verwalten <a href="admin.php?page=jakoblist_edit" class="button add-new-h2" >Neues Buch</a><?php if($_GET['search']) echo '<span class=\'subtitle\'> 	Suchergebnisse für "'.$_GET['search'].'"</span>'; ?></h2>
 		<table style="margin-bottom:0.2em;">
 			<tr>
 				<td class="tablenav">
-					<span class="displaying-num"><?php echo $wpdb->get_var( "SELECT COUNT(*) FROM `wp_ainotenshijakoblist`" ); ?>&nbsp;<?php echo 'Bücher'; ?></span>
+					<span class="displaying-num"><?php echo count($books); ?>&nbsp;<?php echo 'Bücher'; ?></span>
 				</td>
 				<td>
 					<form action="admin.php?" method="get">
@@ -318,7 +326,7 @@ function jakoblist_manage()
 		</tr>
 	</thead>
 	<tbody>
-		<tr>
+		<?php /*<tr> 
 			<form action="admin.php?page=jakoblist&func=jakoblist_add" method="post">
 				<td><input name="title" type="text" size="30%" maxlength="200"><br /><em>Max. 200 Zeichen</em></td>
 				<td><input name="author" type="text" size="30%" maxlength="200"><br /><em>Max. 200 Zeichen</em></td>
@@ -327,20 +335,20 @@ function jakoblist_manage()
 				<td><input name="price" type="text" size="10" maxlength="10"><br /><em>Max. 200 Zeichen</em></td>
 				<td align="left" colspan="2"><input type="submit" name="add" value=" ✚ " class="button-primary" onclick=''></td>
 			</form>
-		</tr>
+		</tr> */?>
 	<?php
 
 		global $wpdb; //Important! DBQueries don't work without this!
 		
 		
-		if($_GET['search'] == '' ) 
-			{ /* Alles außer Suche */ 
-				$books 	= 	$wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` order by `".$orderby."`".$order."" );
+		/*if($_GET['search'] == '' ) 
+			{
+ 				$books 	= 	$wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` order by `".$orderby."`".$order."" );
 			}
 		else 
-			{ /* Suche */	
+			{ 
 				$books 	= 	$wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` WHERE `title` LIKE '%".$searchterm."%' OR `author` LIKE '%".$searchterm."%' OR `publisher` LIKE '%".$searchterm."%' OR `info` LIKE '%".$searchterm."%' order by `".$orderby."` ".$order."" );	
-			}
+			}*/
 		
 		if(count($books) > 0)
 			{ /* keine Suchergebnisse */			
