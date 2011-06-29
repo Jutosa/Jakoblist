@@ -354,13 +354,14 @@ function jakoblist_manage()
 			{ /* keine Suchergebnisse */			
 				foreach($books as $book)
 					{
-						$class 	= 	('alternate' != $class) ? 'alternate' : '';
+						$thecurrency 	= 	' €'; //temporary, check back soon
+						$class 		= 	('alternate' != $class) ? 'alternate' : '';
 						echo '<form action="" method="post"><tr class="'.$class.'">';
 						echo '<td>'.strclean($book->title).'</td>';
 						echo '<td>'.strclean($book->author).'</td>';
 						echo '<td>'.strclean($book->publisher).'</td>';
 						echo '<td>'.strclean($book->info).'</td>';
-						echo '<td>'.strclean($book->price).'</td>';
+						echo '<td>'.strclean($book->price).$thecurrency.'</td>';
 						echo '<td align="left"><input type="button" name="edit" value=" ✎ " class="button-secondary" onclick=location.href="';
 						echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist_edit&id='.$book->id.'"';
 						echo '></td>';
