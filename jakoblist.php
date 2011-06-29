@@ -42,11 +42,11 @@ function jakoblist_output($atts, $content = null)
 	$result ='';
 	if(count($books) == 0)
 		{
-			/* wenn nix da is */
+			/* If there are no books */
 		}
 	else
 		{
-			/* wenn was da is */
+			/* If there are books */
 			foreach($books as $book)
 				{	
 					$thetitle		=	strclean($book->title);
@@ -282,7 +282,7 @@ function jakoblist_manage()
 
 	?>
 	<div class="wrap">
-		<h2>Bücherliste verwalten</h2>
+		<h2>Bücherliste verwalten<?php if($_GET['search']) echo '<span class=\'subtitle\'> 		Suchergebnisse für "'.$_GET['search'].'"</span>'; ?></h2>
 		<table style="margin-bottom:0.2em;">
 			<tr>
 				<td class="tablenav">
