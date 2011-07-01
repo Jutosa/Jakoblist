@@ -38,7 +38,7 @@ function jakoblist_output($atts, $content = null)
 	global $wpdb; //Important! DBQueries don't work without this!
 	
 
-	$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` order by `title`" );
+	$books = $wpdb->get_results( "SELECT * FROM `".$wpdb->prefix."jakoblist` WHERE `active` = 1 order by `title`" );
 	$result ='';
 	if(count($books) == 0)
 		{
@@ -96,6 +96,8 @@ function jakoblist_add()
 	$themodification		= 	current_time('mysql');
 	$themodificator			=	$current_user->user_login;
 	$table_name 			= 	$wpdb->prefix . "jakoblist";
+	
+	($_POST['active']) ? $active = 1 :  $active = 0;
 
 
 	if(!$id == '1')
@@ -108,8 +110,9 @@ function jakoblist_add()
 					'title' 	=> 	$thetitle,
 					'author' 	=> 	$theauthor,
 					'publisher' 	=> 	$thepublisher,
-					'info' 		=> 	$jakoblist_info,
-					'price' 	=> 	$theprice 
+					'info' 		=> 	$theinfo,
+					'price' 	=> 	$theprice,
+					'active' 	=> 	$active	 
 				     ) 
 				     );
 		}
@@ -124,7 +127,8 @@ function jakoblist_add()
 					'author' 	=> 	$theauthor,
 					'publisher' 	=> 	$thepublisher,
 					'info' 		=> 	$theinfo,
-					'price' 	=> 	$theprice
+					'price' 	=> 	$theprice,
+					'active' 	=> 	$active
 				     ),
 				array(
 					'id' 	=> 	$id
@@ -168,6 +172,9 @@ function jakoblist_edit()
 							$thepublisher		=	strclean($book->publisher);
 							$theinfo		=	strclean($book->info);
 							$theprice		=	strclean($book->price);
+							
+							($book->active) ? $checked = 'checked="yes"' : $checked = '';
+							$cancelbtn 		= '<a href="admin.php?page=jakoblist" class="button">Abbrechen</a>';
 						}
 				}
 			else	/*	If no id is provided in the URL the 'add' functionality is loaded */
@@ -175,6 +182,7 @@ function jakoblist_edit()
 					$pagetitle		= 	__("Hinzufügen eines Buches");
 					$formaction 		= 	'admin.php?page=jakoblist&func=jakoblist_add'.$edit;
 					$savebtn  		=	__("Hinzufügen");
+					$checked 		= 	'checked="yes"';
 				}
 				
 			echo
@@ -204,10 +212,14 @@ function jakoblist_edit()
 						</tr>
 						<tr>
 							<td><strong>'.__("Preis").': </strong></td>
-							<td><input type="text" size="10" maxlength="10" name="price" value="'.$theprice.'" /><br /><em>Max. 200 Zeichen</em></td>
+							<td><input type="text" size="10" maxlength="10" name="price" value="'.$theprice.'" /><br /><em>Max. 200 Zeichen</em></td><td></td>
+						</tr>
+						<tr>
+							<td><strong>Aktiv?</strong></td>
+							<td><input type="checkbox"'.$checked.' name="active" value="active"></td>
 						</tr>
 					</table>
-					<br /><input type="submit" class="button-primary" value=" '.$savebtn.' "/>
+					<br /><input type="submit" class="button-primary" value=" '.$savebtn.' "/>&nbsp;'.$cancelbtn.' 
 				</form>';
 			
 			
@@ -302,7 +314,7 @@ function jakoblist_manage()
 				<td width="100%">
 				</td>
 				<td>
-					<input type="text" value="" name="search" />
+					<input type="text" value="<?php echo $_GET["search"] ?>" name="search" />
 				</td>
 				<td>
 					<input type="hidden" name="page" value="jakoblist">
@@ -354,17 +366,19 @@ function jakoblist_manage()
 			{ /* keine Suchergebnisse */			
 				foreach($books as $book)
 					{
-						$thecurrency 	= 	' €'; //temporary, check back soon
+						$thecurrency 	= 	'&nbsp;€'; //temporary, check back soon
+						$status		= 	(!$book->active) ? '<br /><span class="post-state">Entwurf</span>' : '';	
 						$class 		= 	('alternate' != $class) ? 'alternate' : '';
+						$editlink 	= 	get_bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist_edit&id='.$book->id;
 						echo '<form action="" method="post"><tr class="'.$class.'">';
-						echo '<td>'.strclean($book->title).'</td>';
+						echo '<td><strong><a class="row-title" href="'.$editlink.'">'.strclean($book->title).'</a>'.$status.'</strong></td>';
 						echo '<td>'.strclean($book->author).'</td>';
 						echo '<td>'.strclean($book->publisher).'</td>';
 						echo '<td>'.strclean($book->info).'</td>';
-						echo '<td>'.strclean($book->price).$thecurrency.'</td>';
-						echo '<td align="left"><input type="button" name="edit" value=" ✎ " class="button-secondary" onclick=location.href="';
-						echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist_edit&id='.$book->id.'"';
-						echo '></td>';
+						echo '<td align="right">'.strclean($book->price).$thecurrency.'</td>';
+						/*echo '<td align="left"><input type="button" name="edit" value=" ✎ " class="button-secondary" onclick=location.href="';
+						echo $editlink.'"';
+						echo '></td>';*/
 						echo '<td align="center"><input type="button" name="-" value=" - " class="button-secondary" onclick="if(confirm(\'Sind Sie sicher?\')) {location.href=\'';
 						echo bloginfo('wpurl').'/wp-admin/admin.php?page=jakoblist&func=jakoblist_remove&id='.$book->id.'\'} else {return false;}"';
 						echo '></td>';

@@ -14,6 +14,7 @@ function jakoblist_install() {
 	  publisher text NOT NULL,
 	  info text NOT NULL,
 	  price decimal(5,2) NOT NULL,
+	  active tinyint(1) NOT NULL,
 	  UNIQUE KEY id (id)
 	);";
 
@@ -24,12 +25,14 @@ function jakoblist_install() {
 
 function jakoblist_install_data() {
 global $wpdb;
-$jakoblist_title = "Beispielbuch";
-$jakoblist_author = "Max Mustermann";
-$jakoblist_publisher = "Exempel-Verlag";
-$jakoblist_info = "Sehr ausführliche Beschreibung von Beispielen; €0.99";
+$thetitle 	= 	"Beispielbuch";
+$theauthor 	= 	"Max Mustermann";
+$thepublisher 	= 	"Exempel-Verlag";
+$theinfo 	= 	"Sehr ausführliche Beschreibung von Beispielen";
+$theprice 	= 	9.99;
+$active 	= 	1;
 $table_name = $wpdb->prefix . "jakoblist";
-$wpdb->insert($table_name, array( 'time' => current_time('mysql'), 'title' => $jakoblist_title, 'author' => $jakoblist_author, 'publisher' => $jakoblist_publisher, 'info' => $jakoblist_info ) );
+$wpdb->insert($table_name, array( 'time' => current_time('mysql'), 'title' => $thetitle, 'author' => $theauthor, 'publisher' => $thepublisher, 'info' => $theinfo, 'price' => $theprice ) );
 
 }
 ?>
